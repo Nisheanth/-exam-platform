@@ -26,3 +26,13 @@ class PredictResponse(BaseModel):
     predictions: list[PredictionItem]
     overdue_topics: list[str]
     strategy_tip: str
+
+class FlashcardItem(BaseModel):
+    id: int
+    front: str
+    back: str
+    topic: str
+    mastered: bool = False
+
+class FlashcardResponse(BaseModel):
+    flashcards: list[FlashcardItem]

@@ -58,7 +58,29 @@ async def generate_predictions(
         logger.error("prediction_failed", error=str(exc), exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Prediction generation failed: {exc}",
+            detail="An error occurred while generating predictions.",
         )
 
     return response
+
+
+@router.post(
+    "/flashcards",
+    response_model=dict,
+    summary="Generate AI flashcards from an analysis",
+)
+async def generate_study_flashcards(
+    request: PredictRequest,
+    db: Session = Depends(get_db),
+):
+    from app.services.predictor import generate_flashcards
+    try:
+        cards = generate_flashcards(
+            db=db,
+            analysis_id=request.analysis_id,
+        )
+        return cards
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))

@@ -136,7 +136,7 @@ export async function getAnalysis(analysisId) {
   return request(`/api/analysis/${analysisId}`);
 }
 
-// ─── Predictions ─────────────────────────────────────────────────────────────
+// ─── Predictions & Study Tools ───────────────────────────────────────────────
 
 /**
  * Generate AI-powered exam predictions.
@@ -147,6 +147,24 @@ export async function getAnalysis(analysisId) {
  */
 export async function generatePredictions(examName, subject, analysisId) {
   return request('/api/predict', {
+    method: 'POST',
+    body: JSON.stringify({
+      exam_name: examName,
+      subject,
+      analysis_id: analysisId,
+    }),
+  });
+}
+
+/**
+ * Generate AI-powered flashcards from analysis data.
+ * @param {string} examName
+ * @param {string} subject
+ * @param {string} analysisId - UUID of a completed analysis
+ * @returns {Promise<{flashcards}>}
+ */
+export async function generateFlashcards(examName, subject, analysisId) {
+  return request('/api/flashcards', {
     method: 'POST',
     body: JSON.stringify({
       exam_name: examName,

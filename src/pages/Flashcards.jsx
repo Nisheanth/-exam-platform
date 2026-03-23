@@ -1,21 +1,78 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Check, X, ChevronLeft, ChevronRight, Shuffle, Brain } from 'lucide-react';
+import { BookOpen, Check, X, ChevronLeft, ChevronRight, Shuffle, Brain, Loader2 } from 'lucide-react';
 import { flashcards as flashcardsData } from '../data/mockData';
+import { isBackendAvailable, listPapers, runAnalysis, generateFlashcards } from '../services/api';
 
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
 export default function Flashcards() {
-  const [cards, setCards] = useState(flashcardsData);
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const cur = cards[idx];
+  const cur = cards.length > 0 ? cards[idx] : null;
   const mastered = cards.filter(c => c.mastered).length;
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchCards() {
+      try {
+        const online = await isBackendAvailable();
+        if (!online) {
+          if (mounted) { setCards(flashcardsData); setLoading(false); }
+          return;
+        }
+
+        const res = await listPapers();
+        if (res.papers?.length > 0) {
+          const target = res.papers[0];
+          const analysis = await runAnalysis(target.exam_name, target.subject);
+          const flashResponse = await generateFlashcards(target.exam_name, target.subject, analysis.analysis_id);
+          
+          if (mounted && flashResponse?.flashcards) {
+            setCards(flashResponse.flashcards);
+          } else if (mounted) {
+            setCards(flashcardsData);
+          }
+        } else {
+          if (mounted) setCards(flashcardsData);
+        }
+      } catch (err) {
+        if (mounted) setCards(flashcardsData); // Fallback to mock data
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    fetchCards();
+    return () => { mounted = false; };
+  }, []);
 
   const next = () => { setFlipped(false); setTimeout(() => setIdx((idx + 1) % cards.length), 150); };
   const prev = () => { setFlipped(false); setTimeout(() => setIdx((idx - 1 + cards.length) % cards.length), 150); };
   const toggleMaster = () => setCards(cards.map((c, i) => i === idx ? { ...c, mastered: !c.mastered } : c));
   const shuffle = () => { setCards([...cards].sort(() => Math.random() - 0.5)); setIdx(0); setFlipped(false); };
+
+  if (loading) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <Loader2 size={40} className="text-indigo-400 animate-spin" />
+        <h2 className="text-xl font-bold text-white mt-4">Generating AI Flashcards...</h2>
+        <p className="text-slate-400 text-sm">Our AI Tutor is reading your exam PDFs and forging personalized flashcards.</p>
+      </div>
+    );
+  }
+
+  if (!cards || cards.length === 0) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <Brain size={40} className="text-slate-500" />
+        <h2 className="text-xl font-bold text-white mt-4">No Flashcards Available</h2>
+        <p className="text-slate-400 text-sm">Upload a PDF exam in the main application first to generate flashcards.</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div className="p-6 space-y-6" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}>
@@ -32,7 +89,7 @@ export default function Flashcards() {
           <span className="text-xs text-slate-400">Progress: {mastered}/{cards.length} mastered</span>
           <span className="text-xs font-medium text-indigo-400">{Math.round((mastered / cards.length) * 100)}%</span>
         </div>
-        <div className="confidence-bar"><div className="confidence-fill" style={{ width: `${(mastered / cards.length) * 100}%`, background: 'linear-gradient(90deg, #6366f1, #06b6d4)' }} /></div>
+        <div className="confidence-bar"><div className="confidence-fill" style={{ width: `${(mastered / Math.max(1, cards.length)) * 100}%`, background: 'linear-gradient(90deg, #6366f1, #06b6d4)' }} /></div>
       </motion.div>
 
       <motion.div variants={item} className="flex justify-center">
