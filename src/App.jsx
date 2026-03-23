@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import PageLoader from './components/PageLoader';
 import BackendStatus from './components/BackendStatus';
 import { useBackendStatus } from './hooks/useBackend';
+import Login from './pages/Login'; // <--- Secure Auth Import
 
 // Performance Optimization: Lazy Load heavyweight page components
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -22,11 +23,22 @@ export default function App() {
   const [sidebarWidth] = useState(240);
   const location = useLocation();
   const { connected, checking, recheck } = useBackendStatus();
+  
+  // Basic Auth State linked to localStorage (Step 2 Implementation)
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem('isAuthenticated') === 'true'
+  );
 
   // Pseudo-analytics tracker for professional analytics module integration
   useEffect(() => {
-    console.info(`[Analytics] Page View Logged: ${location.pathname}`);
-  }, [location]);
+    if (isAuthenticated) {
+      console.info(`[Analytics] Page View Logged: ${location.pathname}`);
+    }
+  }, [location, isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return <Login onLogin={setIsAuthenticated} />;
+  }
 
   return (
     <div className="min-h-screen relative bg-[#05050A] text-slate-200 selection:bg-indigo-500/40 selection:text-white font-sans antialiased font-feature-settings-cv11">
@@ -50,11 +62,17 @@ export default function App() {
         
         {/* Main Content Area */}
         <main 
-          className="ml-[240px] flex-1 h-screen overflow-y-auto overflow-x-hidden transition-all duration-300 flex flex-col items-stretch"
+          className="ml-[240px] flex-1 h-screen overflow-y-auto overflow-x-hidden transition-all duration-300 flex flex-col items-stretch custom-scrollbar"
           role="main"
         >
           {/* Top status bar */}
           <div className="sticky top-0 z-30 flex items-center justify-end px-6 py-2 backdrop-blur-xl bg-[#0A0710]/60 border-b border-white/5">
+            <button 
+              onClick={() => { localStorage.removeItem('isAuthenticated'); setIsAuthenticated(false); }}
+              className="px-3 py-1 mr-4 bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-colors"
+            >
+              Sign Out
+            </button>
             <BackendStatus connected={connected} checking={checking} onRecheck={recheck} />
           </div>
 
