@@ -356,17 +356,57 @@ export default function Dashboard() {
         <HeatmapGrid data={liveAnalysis ? liveAnalysis.topic_heatmap.map(t => ({ topic: t.topic, ...t.year_counts })) : undefined} />
       </motion.div>
 
-      {/* Developer Credit */}
-      <motion.div
-        variants={item}
-        className="flex justify-center pt-4 pb-2"
-      >
-        <div className="flex items-center gap-2 px-5 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 backdrop-blur-sm">
-          <span className="text-[11px] text-slate-500">✦</span>
-          <span className="text-[12px] font-semibold tracking-wide bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-            Developed by R.Nisheanth
+      {/* Developer Portfolio / Contact Footer */}
+      <motion.div variants={item} className="mt-12 mb-6 p-8 rounded-3xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 flex flex-col items-center justify-center text-center relative overflow-hidden">
+        {/* Decorative background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-[500px] bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+        
+        <div className="flex items-center gap-2 px-5 py-2 mb-6 rounded-full border border-indigo-500/20 bg-indigo-500/10 backdrop-blur-md relative z-10 shadow-[0_0_20px_rgba(99,102,241,0.15)]">
+          <span className="text-[14px] text-indigo-400">✦</span>
+          <span className="text-[14px] font-bold tracking-wide text-white">
+            Architected & Engineered by R.Nisheanth
           </span>
-          <span className="text-[11px] text-slate-500">✦</span>
+          <span className="text-[14px] text-indigo-400">✦</span>
+        </div>
+        
+        <p className="max-w-md text-sm text-indigo-200/80 leading-relaxed mb-6 font-medium relative z-10">
+          Transforming complex ideas into stunning software. <br/>
+          <span className="text-white">Available for premium Web Application & Mobile App Development.</span> Reach out today to bring your next big vision to life.
+        </p>
+
+        {/* Contact Links Grid */}
+        <div className="flex flex-wrap justify-center gap-4 relative z-10">
+          {/* Email */}
+          <a href="mailto:nisheanthravi@gmail.com" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] transition-all group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 group-hover:text-emerald-400 transition-colors">
+              <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+            <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">nisheanthravi@gmail.com</span>
+          </a>
+
+          {/* Phone */}
+          <a href="tel:+919342213125" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5 hover:border-cyan-500/30 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)] transition-all group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 group-hover:text-cyan-400 transition-colors">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">+91 9342213125</span>
+          </a>
+
+          {/* Instagram */}
+          <a href="https://www.instagram.com/nisheanth_reddy/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(236,72,153,0.15)] transition-all group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 group-hover:text-pink-500 transition-colors">
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+            </svg>
+            <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">nisheanth_reddy</span>
+          </a>
+
+          {/* YouTube */}
+          <a href="https://www.youtube.com/@nishugaming2641" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/5 hover:border-red-500/30 hover:shadow-[0_0_15px_rgba(239,68,68,0.15)] transition-all group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 group-hover:text-red-500 transition-colors">
+              <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/>
+            </svg>
+            <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">@nishugaming2641</span>
+          </a>
         </div>
       </motion.div>
 
