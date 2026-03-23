@@ -4,7 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  # VITE_API_URL = "https://your-backend-app.onrender.com" # Set this in Netlify dashboard!
+  VITE_API_URL = "https://exam-ai-backend-27i4.onrender.com"
 
 [[redirects]]
   from = "/*"
