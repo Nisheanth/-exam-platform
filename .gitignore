@@ -11,6 +11,7 @@ pnpm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.envrc
 
 # Build Directories
 dist
@@ -18,18 +19,39 @@ dist-ssr
 *.local
 node_modules/
 
-# Python / Backend
-exam-backend/__pycache__/
-exam-backend/*.py[cod]
-exam-backend/*$py.class
-exam-backend/venv/
-exam-backend/env/
-exam-backend/.env
-exam-backend/*.db
-exam-backend/*.sqlite3
-exam-backend/exam_analyzer.db
+# Python
+__pycache__/
+*.py[codz]
+*$py.class
+*.so
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+venv/
+env/
+.venv/
+
+# Database
+*.db
+*.sqlite3
+db.sqlite3-journal
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Uploads
 exam-backend/uploads/
 
 # OS Files
 .DS_Store
 Thumbs.db
+
+# IDE
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
