@@ -137,3 +137,11 @@ export const examProphecyScore = {
     { factor: 'Syllabus Coverage', score: 88, weight: 0.1 },
   ]
 };
+
+export const aiResponses = [
+  "That's an excellent question. Let's break it down into smaller parts.",
+  "Based on the exam trends, this topic appears frequently. Here is a summary.",
+  "I've analyzed the past papers, and this seems to carry a high weightage. Let's practice it.",
+  "Could you clarify what specific part of this topic you find confusing?",
+  "Let me generate a quick flashcard for you based on this concept.",
+];
