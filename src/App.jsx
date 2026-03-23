@@ -56,18 +56,17 @@ export default function App() {
         <div className="absolute bottom-[10%] right-[10%] w-[30%] h-[30%] bg-indigo-400/10 rounded-full blur-3xl animate-blob" />
       </div>
 
-      <div className="relative z-10 flex w-full h-screen overflow-hidden">
+      <div className="relative z-10 flex flex-col md:flex-row w-full h-screen overflow-hidden">
         {/* Semantic Sidebar Navigation with ARIA support inside */}
         <Sidebar collapsed={sidebarWidth < 240} onCollapse={(isCollapsed) => setSidebarWidth(isCollapsed ? 72 : 240)} />
         
         {/* Main Content Area */}
         <main 
-          className={`flex-1 h-screen overflow-y-auto overflow-x-auto transition-all duration-300 flex flex-col items-stretch custom-scrollbar`}
-          style={{ marginLeft: sidebarWidth + 'px' }}
+          className="flex-1 w-full md:w-auto h-[calc(100vh-60px)] md:h-screen overflow-y-auto overflow-x-auto transition-all duration-300 flex flex-col items-stretch custom-scrollbar relative z-0"
           role="main"
         >
           {/* Top status bar */}
-          <div className="sticky top-0 z-30 flex items-center justify-end px-6 py-2 backdrop-blur-xl bg-[#0A0710]/60 border-b border-white/5">
+          <div className="sticky top-0 z-30 flex items-center justify-end px-4 md:px-6 py-2 backdrop-blur-xl bg-[#0A0710]/60 border-b border-white/5">
             <button 
               onClick={() => { localStorage.removeItem('isAuthenticated'); setIsAuthenticated(false); }}
               className="px-3 py-1 mr-4 bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-colors"
