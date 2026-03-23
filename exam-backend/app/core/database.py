@@ -58,9 +58,8 @@ def get_db() -> Session:  # type: ignore[misc]
 def init_db() -> None:
     """Create all tables in the database.
 
-    Called once at application startup.  For SQLite, no extensions are needed.
-    For PostgreSQL with pgvector, the extension is created if the driver
-    supports it (errors are silently ignored so the server still boots).
+    In production, you would typically use Alembic for migrations.
+    For this prototype/project, we just create tables if they don't exist.
     """
     log = logging.getLogger(__name__)
 

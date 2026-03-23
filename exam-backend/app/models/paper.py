@@ -51,10 +51,14 @@ class Paper(Base):
         default=lambda: datetime.now(timezone.utc),
     )
 
+    # User isolation boundary
+    user_id = Column(String(36), ForeignKey("users.id"), index=True, nullable=True)
+
     # Relationships
     questions = relationship(
         "Question", back_populates="paper", cascade="all, delete-orphan"
     )
+    user = relationship("User", back_populates="papers")
 
     def __repr__(self) -> str:
         return (

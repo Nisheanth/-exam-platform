@@ -10,7 +10,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import analysis, papers, predict, chat
+from app.api.routes import analysis, papers, predict, chat, auth
 from app.core.config import get_settings
 from app.core.database import init_db
 
@@ -18,6 +18,7 @@ from app.core.database import init_db
 # knows about them before init_db() calls create_all().
 import app.models.paper     # noqa: F401  registers Paper + Question
 import app.models.analysis  # noqa: F401  registers AnalysisResult
+import app.models.user      # noqa: F401  registers User
 
 # ── Structlog configuration ───────────────────────────────────────────────────
 try:
@@ -118,6 +119,7 @@ async def health_check():
 
 
 # ── Register routers ──────────────────────────────────────────────────────────
+app.include_router(auth.router, prefix="/api", tags=["auth"])
 app.include_router(papers.router)
 app.include_router(analysis.router)
 app.include_router(predict.router)

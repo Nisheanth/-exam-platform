@@ -9,8 +9,8 @@ import json
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, String, Text
-from sqlalchemy.orm import Session
+from sqlalchemy import Column, DateTime, String, Text, ForeignKey
+from sqlalchemy.orm import Session, relationship
 
 from app.core.database import Base
 
@@ -34,6 +34,12 @@ class AnalysisResult(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
+
+    # User isolation boundary
+    user_id = Column(String(36), ForeignKey("users.id"), index=True, nullable=True)
+
+    # Relationships
+    user = relationship("User", back_populates="analyses")
 
     # ── Convenience property to transparently serialize/deserialize JSON ──
     @property
