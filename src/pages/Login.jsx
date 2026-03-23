@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
 import logoImg from '../assets/testgenie-logo.png';
 
 export default function Login({ onLogin }) {
@@ -8,11 +8,13 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMsg('');
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -23,7 +25,7 @@ export default function Login({ onLogin }) {
       });
 
       if (res.status === 401) {
-        setError('Incorrect password. Please try again.');
+        setError('Wrong password! This email is already registered. Please try again with the correct password.');
         setLoading(false);
         return;
       }
@@ -40,12 +42,21 @@ export default function Login({ onLogin }) {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', data.email);
       localStorage.setItem('userId', data.user_id);
-      onLogin(true);
+
+      // Check if backend confirms it's a brand new account
+      if (data.message === 'Account securely generated.') {
+        setSuccessMsg(`🎉 Welcome aboard! Your account has been created for ${data.email}`);
+        setTimeout(() => onLogin(true), 2000); // Show message for 2s then enter
+      } else {
+        onLogin(true);
+      }
     } catch {
       // Network offline or backend spinning up — allow through gracefully
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', email);
       onLogin(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,12 +121,32 @@ export default function Login({ onLogin }) {
               </div>
             </div>
 
-            {error && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl flex items-start gap-2">
-                <ShieldCheck size={14} className="mt-0.5 flex-shrink-0" />
-                <span>{error}</span>
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {successMsg && (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
+                >
+                  <CheckCircle2 size={18} className="flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium">{successMsg}</span>
+                </motion.div>
+              )}
+              {error && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400"
+                >
+                  <XCircle size={18} className="flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium">{error}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <button 
               type="submit" 
