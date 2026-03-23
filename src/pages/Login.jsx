@@ -55,12 +55,13 @@ export default function Login({ onLogin }) {
             <div>
               <label className="text-xs font-medium text-slate-400 pl-1 mb-1.5 block">Email Address</label>
               <div className="relative">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 z-10" />
                 <input 
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50 transition-all"
+                  className="w-full pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50 transition-all focus:bg-white/[0.05]"
+                  style={{ paddingLeft: '44px' }}
                   placeholder="admin@testgenie.com"
                   required
                 />
@@ -73,12 +74,13 @@ export default function Login({ onLogin }) {
                 <a href="#" className="text-xs font-medium text-amber-400 hover:text-amber-300">Forgot?</a>
               </div>
               <div className="relative">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 z-10" />
                 <input 
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50 transition-all"
+                  className="w-full pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50 transition-all focus:bg-white/[0.05]"
+                  style={{ paddingLeft: '44px' }}
                   placeholder="••••••••"
                   required
                 />
