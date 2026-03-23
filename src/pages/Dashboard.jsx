@@ -88,6 +88,19 @@ export default function Dashboard() {
               { label: 'Subjects', value: String(new Set(papersRes.papers.map(p => p.subject)).size), change: 'active', icon: 'target', color: '#10b981' },
               { label: 'Latest Year', value: String(Math.max(...papersRes.papers.map(p => p.year))), change: 'most recent', icon: 'clock', color: '#f59e0b' },
             ]);
+
+            // Try to hit the endpoint for Analysis if we have uploaded papers
+            // We'll just run analysis for the latest subject as a demo or use the first returned paper's subject
+            try {
+              if (papersRes.papers.length > 0) {
+                const targetSubject = papersRes.papers[0].subject;
+                const targetExam = papersRes.papers[0].exam_name;
+                const analysisRes = await runAnalysis(targetExam, targetSubject);
+                if (mounted) setLiveAnalysis(analysisRes);
+              }
+            } catch (aErr) {
+              console.warn("Analysis not generated yet for this exam/subject", aErr);
+            }
           }
         }
       } catch (err) {
@@ -206,9 +219,11 @@ export default function Dashboard() {
           </h3>
           
           <div className="flex gap-4 overflow-x-auto pb-4 pt-2 -mx-2 px-2 custom-scrollbar snap-x relative z-10 flex-1">
-            {recentQuestions.sort((a,b) => b.repeats - a.repeats).map((q, i) => (
+            {(liveAnalysis ? liveAnalysis.repeated_questions : recentQuestions)
+              .sort((a, b) => (b.frequency || b.repeats) - (a.frequency || a.repeats))
+              .map((q, i) => (
               <motion.div 
-                key={q.id} 
+                key={q.id || i} 
                 className="flex-shrink-0 w-[300px] glass-card p-5 rounded-2xl snap-start border border-rose-500/20 hover:border-rose-400/50 hover:shadow-[0_0_20px_rgba(244,63,94,0.2)] transition-all cursor-pointer group flex flex-col"
                 whileHover={{ y: -5 }}
               >
@@ -218,13 +233,13 @@ export default function Dashboard() {
                   </span>
                   <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-lg border border-white/5">
                     <Flame size={12} className="text-orange-500" />
-                    <span className="text-xs font-black text-white">{q.repeats}x</span>
+                    <span className="text-xs font-black text-white">{q.frequency || q.repeats}x</span>
                   </div>
                 </div>
-                <p className="text-sm font-medium text-white leading-relaxed mb-4 group-hover:text-rose-200 transition-colors flex-1">{q.text}</p>
+                <p className="text-sm font-medium text-white leading-relaxed mb-4 group-hover:text-rose-200 transition-colors flex-1">{q.question_text || q.text}</p>
                 <div className="flex items-center gap-2 mt-auto pt-3 border-t border-white/5">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-300">{q.subject}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold">{q.marks} Marks</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-300 truncate max-w-[120px]">{q.topic || q.subject}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold">10 Marks</span>
                 </div>
               </motion.div>
             ))}
@@ -306,24 +321,27 @@ export default function Dashboard() {
             AI Predictions
           </h3>
           <div className="space-y-3 relative z-10 flex-1 overflow-y-auto custom-scrollbar pr-2 max-h-[350px]">
-            {predictions.slice(0, 5).map((p, i) => (
-              <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-transparent hover:border-purple-500/30 transition-all duration-300 group cursor-pointer hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] hover:-translate-y-1">
+            {(liveAnalysis ? liveAnalysis.important_questions : predictions).slice(0, 5).map((p, i) => {
+              const confidence = p.score !== undefined ? Math.round(p.score * 100) : p.confidence;
+              const question = p.question_text || p.question;
+              return (
+              <div key={p.id || i} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-transparent hover:border-purple-500/30 transition-all duration-300 group cursor-pointer hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] hover:-translate-y-1">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black flex-shrink-0"
                   style={{
-                    background: p.confidence >= 90 ? 'rgba(16,185,129,0.15)' : p.confidence >= 80 ? 'rgba(99,102,241,0.15)' : 'rgba(245,158,11,0.15)',
-                    color: p.confidence >= 90 ? '#10b981' : p.confidence >= 80 ? '#818cf8' : '#f59e0b'
+                    background: confidence >= 90 ? 'rgba(16,185,129,0.15)' : confidence >= 80 ? 'rgba(99,102,241,0.15)' : 'rgba(245,158,11,0.15)',
+                    color: confidence >= 90 ? '#10b981' : confidence >= 80 ? '#818cf8' : '#f59e0b'
                   }}>
-                  {p.confidence}%
+                  {confidence}%
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] text-white font-medium truncate group-hover:text-indigo-300 transition-colors leading-tight">{p.question}</p>
+                  <p className="text-[13px] text-white font-medium truncate group-hover:text-indigo-300 transition-colors leading-tight">{question}</p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400">{p.topic}</span>
-                    <span className="text-[9px] text-slate-500 font-semibold">{p.marks} marks</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 truncate max-w-[120px]">{p.topic}</span>
+                    <span className="text-[9px] text-slate-500 font-semibold">{p.marks || 10} marks</span>
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </motion.div>
       </div>
@@ -335,7 +353,7 @@ export default function Dashboard() {
           Sub-Topic Frequency Matrix
         </h3>
         <p className="text-xs text-slate-400 mb-6">Historical aggregation of specific question sub-topics across 8 examination cycles.</p>
-        <HeatmapGrid />
+        <HeatmapGrid data={liveAnalysis ? liveAnalysis.topic_heatmap.map(t => ({ topic: t.topic, ...t.year_counts })) : undefined} />
       </motion.div>
 
       {/* Developer Credit */}
