@@ -58,11 +58,12 @@ export default function App() {
 
       <div className="relative z-10 flex w-full h-screen overflow-hidden">
         {/* Semantic Sidebar Navigation with ARIA support inside */}
-        <Sidebar collapsed={sidebarWidth < 240} />
+        <Sidebar collapsed={sidebarWidth < 240} onCollapse={(isCollapsed) => setSidebarWidth(isCollapsed ? 72 : 240)} />
         
         {/* Main Content Area */}
         <main 
-          className="ml-[240px] flex-1 h-screen overflow-y-auto overflow-x-hidden transition-all duration-300 flex flex-col items-stretch custom-scrollbar"
+          className={`flex-1 h-screen overflow-y-auto overflow-x-auto transition-all duration-300 flex flex-col items-stretch custom-scrollbar`}
+          style={{ marginLeft: sidebarWidth + 'px' }}
           role="main"
         >
           {/* Top status bar */}

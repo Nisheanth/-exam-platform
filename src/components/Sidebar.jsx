@@ -21,8 +21,14 @@ const navItems = [
   { path: '/performance', icon: Zap, label: 'Performance' },
 ];
 
-export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+export default function Sidebar({ onCollapse, collapsed: initialCollapsed = false }) {
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+
+  const toggleCollapse = () => {
+    const newVal = !collapsed;
+    setCollapsed(newVal);
+    onCollapse?.(newVal);
+  };
 
   return (
     <motion.aside
@@ -71,7 +77,7 @@ export default function Sidebar() {
       {/* Collapse toggle */}
       <div className="p-3 border-t border-white/5">
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapse}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all text-sm"
         >
           {collapsed ? <ChevronRight size={16} /> : <><ChevronLeft size={16} /> <span>Collapse</span></>}
