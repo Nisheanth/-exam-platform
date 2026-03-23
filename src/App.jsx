@@ -40,6 +40,13 @@ export default function App() {
     return <Login onLogin={setIsAuthenticated} />;
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    setIsAuthenticated(false);
+  };
+
   return (
     <div className="min-h-screen relative bg-[#05050A] text-slate-200 selection:bg-indigo-500/40 selection:text-white font-sans antialiased font-feature-settings-cv11">
       {/* Top-Tier Noise Texture Overlay */}
@@ -71,7 +78,7 @@ export default function App() {
         </div>
 
         {/* Semantic Sidebar Navigation with ARIA support inside */}
-        <Sidebar mobileOpen={sidebarWidth === 'open'} onCloseMobile={() => setSidebarWidth('closed')} collapsed={sidebarWidth < 240 && sidebarWidth !== 'open' && sidebarWidth !== 'closed'} onCollapse={(isCollapsed) => setSidebarWidth(isCollapsed ? 72 : 240)} />
+        <Sidebar mobileOpen={sidebarWidth === 'open'} onCloseMobile={() => setSidebarWidth('closed')} collapsed={sidebarWidth < 240 && sidebarWidth !== 'open' && sidebarWidth !== 'closed'} onCollapse={(isCollapsed) => setSidebarWidth(isCollapsed ? 72 : 240)} onLogout={handleLogout} />
         
         {/* Main Content Area */}
         <main 
@@ -80,10 +87,12 @@ export default function App() {
         >
           {/* Top status bar */}
           <div className="sticky top-0 z-30 flex items-center justify-end px-4 md:px-6 py-2 backdrop-blur-xl bg-[#0A0710]/60 border-b border-white/5">
+            <span className="text-[10px] text-slate-500 mr-3 hidden md:block">{localStorage.getItem('userEmail')}</span>
             <button 
-              onClick={() => { localStorage.removeItem('isAuthenticated'); setIsAuthenticated(false); }}
-              className="px-3 py-1 mr-4 bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-colors"
+              onClick={handleLogout}
+              className="px-3 py-1.5 mr-4 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-[11px] font-bold tracking-wider uppercase transition-all hover:text-white flex items-center gap-1.5"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
               Sign Out
             </button>
             <BackendStatus connected={connected} checking={checking} onRecheck={recheck} />

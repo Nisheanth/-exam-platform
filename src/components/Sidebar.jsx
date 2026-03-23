@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Brain, Sparkles, FileText, BarChart3,
   MessageCircle, Upload, Target, BookOpen, Zap, Settings, ChevronLeft, ChevronRight, Sun, Moon,
-  Wand2, Library
+  Wand2, Library, LogOut
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ const navItems = [
   { path: '/performance', icon: Zap, label: 'Performance' },
 ];
 
-export default function Sidebar({ onCollapse, collapsed: initialCollapsed = false, mobileOpen = false, onCloseMobile }) {
+export default function Sidebar({ onCollapse, collapsed: initialCollapsed = false, mobileOpen = false, onCloseMobile, onLogout }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
 
   const toggleCollapse = () => {
@@ -98,12 +98,25 @@ export default function Sidebar({ onCollapse, collapsed: initialCollapsed = fals
           </button>
         </div>
 
-        {/* Settings */}
+        {/* Settings & Logout */}
         <div className="p-3 border-t border-white/5 space-y-1">
+          {!collapsed && (
+            <div className="px-3 py-2 mb-2">
+              <p className="text-[10px] text-slate-500 truncate">{localStorage.getItem('userEmail') || 'User'}</p>
+            </div>
+          )}
           <NavLink to="/settings" onClick={() => { if(window.innerWidth < 768) onCloseMobile?.(); }} className={`sidebar-link ${collapsed ? 'justify-center px-3' : ''}`} aria-label="Settings">
             <Settings size={18} aria-hidden="true" />
             {!collapsed && <span>Settings</span>}
           </NavLink>
+          <button
+            onClick={() => { onLogout?.(); onCloseMobile?.(); }}
+            className={`sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-500/10 ${collapsed ? 'justify-center px-3' : ''}`}
+            aria-label="Sign Out"
+          >
+            <LogOut size={18} aria-hidden="true" />
+            {!collapsed && <span>Sign Out</span>}
+          </button>
         </div>
       </motion.aside>
     </>
