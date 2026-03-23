@@ -1,0 +1,22 @@
+services:
+  # ── Backend: FastAPI Web Service ──────────────────────────────────────────
+  - type: web
+    name: exam-analyzer-backend
+    env: python
+    buildCommand: |
+      cd exam-backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd exam-backend
+      uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: GOOGLE_API_KEY
+        sync: false  # You must set this manually in Render Dashboard
+      - key: DATABASE_URL
+        value: sqlite:///exam_analyzer.db # Uses local SQLite file
+      - key: CORS_ORIGINS
+        value: "*" # Update this to your Netlify/Vercel frontend URL later
