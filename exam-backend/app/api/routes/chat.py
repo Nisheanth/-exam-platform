@@ -9,7 +9,7 @@ from app.services.chatbot import generate_chat_response
 logger = structlog.get_logger(__name__)
 router = APIRouter()
 
-@router.post("/", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse)
 def chat_with_tutor(request: ChatRequest) -> ChatResponse:
     """Send a message to the AI Study Tutor.
     

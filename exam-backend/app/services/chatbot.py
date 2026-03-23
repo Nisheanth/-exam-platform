@@ -42,20 +42,22 @@ def generate_chat_response(
     if exam_context:
         system_instruction += f"The student is specifically preparing for: {exam_context}.\n"
 
-    # Gemini uses a different history format
-    gemini_history = []
-    for msg in history:
-        role = "model" if msg.role == "ai" else "user"
-        gemini_history.append({"role": role, "parts": [msg.content]})
+    # Instead of Gemini's highly strict chat history API (which crashes if roles don't strictly alternate),
+    # we inject the conversation transcript directly into the prompt to guarantee reliability.
+    conversation = ""
+    # Keep the last 6 messages to provide conversational context without overflow
+    for msg in history[-6:]:
+        speaker = "AI Tutor" if msg.role == "ai" else "Student"
+        conversation += f"{speaker}: {msg.content}\n\n"
+
+    prompt = f"{conversation}Student: {message}\n\nAI Tutor:"
 
     model = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
         system_instruction=system_instruction,
     )
 
-    chat = model.start_chat(history=gemini_history)
-
     logger.info("chatbot_request", context=exam_context, history_len=len(history))
-
-    response = chat.send_message(message)
+    
+    response = model.generate_content(prompt)
     return response.text
