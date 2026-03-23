@@ -14,16 +14,20 @@ export default function Login({ onLogin }) {
     setLoading(true);
     setError('');
 
-    // Simulate API Auth Request
+    // Native Email Validation & Open Access Simulation
     setTimeout(() => {
-      if (email === 'admin@testgenie.com' && password === 'admin123') {
-        localStorage.setItem('isAuthenticated', 'true');
-        onLogin(true);
-      } else {
-        setError('Invalid credentials. Hint: use admin@testgenie.com / admin123');
+      if (!email.includes('@') || !email.includes('.')) {
+        setError('Please enter a valid email address.');
         setLoading(false);
+      } else if (password.length < 5) {
+        setError('Password must be at least 5 characters automatically secure.');
+        setLoading(false);
+      } else {
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userEmail', email); // Store their email to personalize the dashboard later!
+        onLogin(true);
       }
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -47,8 +51,8 @@ export default function Login({ onLogin }) {
               <div className="absolute inset-0 bg-amber-400/20 rounded-2xl blur-lg group-hover:bg-amber-400/40 transition-all duration-500" />
               <img src={logoImg} alt="Logo" className="w-full h-full object-cover rounded-xl relative z-10" />
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Welcome Back</h1>
-            <p className="text-slate-400 text-sm mt-2">Sign in to your Magic Scholar Engine</p>
+            <h1 className="text-2xl font-black text-white tracking-tight">Access TestGenie</h1>
+            <p className="text-slate-400 text-sm mt-2">Sign in or register to analyze your exams</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -62,7 +66,7 @@ export default function Login({ onLogin }) {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/50 transition-all focus:bg-white/[0.05]"
                   style={{ paddingLeft: '44px' }}
-                  placeholder="admin@testgenie.com"
+                  placeholder="your.email@gmail.com"
                   required
                 />
               </div>
