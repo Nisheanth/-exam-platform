@@ -36,3 +36,14 @@ class FlashcardItem(BaseModel):
 
 class FlashcardResponse(BaseModel):
     flashcards: list[FlashcardItem]
+
+class NoteItem(BaseModel):
+    id: int
+    title: str
+    content: str
+    topic: str
+    type: str = Field(..., examples=["detailed", "quick", "formula", "summary", "cheatsheet"])
+    createdAt: str
+
+class NotesResponse(BaseModel):
+    notes: list[NoteItem]

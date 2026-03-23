@@ -57,13 +57,26 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex flex-col md:flex-row w-full h-screen overflow-hidden">
+        {/* Mobile Header Menu (Slide-in Controller) */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#05050A]/80 backdrop-blur-xl z-40">
+          <div className="flex flex-col">
+            <h1 className="text-sm font-black text-white bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">TestGenie AI</h1>
+          </div>
+          <button 
+            onClick={() => setSidebarWidth(sidebarWidth === 'open' ? 'closed' : 'open')}
+            className="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-300"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+        </div>
+
         {/* Semantic Sidebar Navigation with ARIA support inside */}
-        <Sidebar collapsed={sidebarWidth < 240} onCollapse={(isCollapsed) => setSidebarWidth(isCollapsed ? 72 : 240)} />
+        <Sidebar mobileOpen={sidebarWidth === 'open'} onCloseMobile={() => setSidebarWidth('closed')} collapsed={sidebarWidth < 240 && sidebarWidth !== 'open' && sidebarWidth !== 'closed'} onCollapse={(isCollapsed) => setSidebarWidth(isCollapsed ? 72 : 240)} />
         
         {/* Main Content Area */}
         <main 
-          className="flex-1 w-full md:w-auto h-[calc(100vh-60px)] md:h-screen overflow-y-auto overflow-x-auto transition-all duration-300 flex flex-col items-stretch custom-scrollbar relative z-0"
-          role="main"
+          className="flex-1 w-full md:w-auto h-[calc(100vh-60px)] md:h-screen overflow-y-auto overflow-x-hidden relative scroll-smooth focus:outline-none scrollbar-hide pt-4 md:pt-0"
+          id="main-content" tabIndex="-1"
         >
           {/* Top status bar */}
           <div className="sticky top-0 z-30 flex items-center justify-end px-4 md:px-6 py-2 backdrop-blur-xl bg-[#0A0710]/60 border-b border-white/5">

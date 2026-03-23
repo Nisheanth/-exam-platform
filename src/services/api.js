@@ -174,6 +174,24 @@ export async function generateFlashcards(examName, subject, analysisId) {
   });
 }
 
+/**
+ * Generate AI-powered Notes from analysis data.
+ * @param {string} examName
+ * @param {string} subject
+ * @param {string} analysisId
+ * @returns {Promise<{notes}>}
+ */
+export async function generateNotes(examName, subject, analysisId) {
+  return request('/api/notes', {
+    method: 'POST',
+    body: JSON.stringify({
+      exam_name: examName,
+      subject,
+      analysis_id: analysisId,
+    }),
+  });
+}
+
 // ─── Chat ────────────────────────────────────────────────────────────────────
 
 /**

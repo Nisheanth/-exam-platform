@@ -21,7 +21,7 @@ const navItems = [
   { path: '/performance', icon: Zap, label: 'Performance' },
 ];
 
-export default function Sidebar({ onCollapse, collapsed: initialCollapsed = false }) {
+export default function Sidebar({ onCollapse, collapsed: initialCollapsed = false, mobileOpen = false, onCloseMobile }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
 
   const toggleCollapse = () => {
@@ -32,12 +32,24 @@ export default function Sidebar({ onCollapse, collapsed: initialCollapsed = fals
 
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity"
+          onClick={onCloseMobile}
+        />
+      )}
+
+      {/* Main Sidebar (Desktop + Mobile Drawer) */}
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? 72 : 240 }}
+        animate={{ width: collapsed ? 72 : 260, x: mobileOpen ? 0 : (window.innerWidth < 768 ? -300 : 0) }}
         transition={{ type: 'spring', stiffness: 300, damping: 30, mass: 1 }}
-        className="hidden md:flex flex-shrink-0 relative h-screen bg-[#05050A]/80 backdrop-blur-3xl border-r border-[#ffffff0a] z-50 flex-col"
+        className={`
+          flex-shrink-0 relative h-screen bg-[#05050A]/95 backdrop-blur-3xl border-r border-[#ffffff0a] 
+          flex-col z-50
+          fixed md:relative top-0 left-0
+        `}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5 overflow-hidden">
@@ -63,6 +75,7 @@ export default function Sidebar({ onCollapse, collapsed: initialCollapsed = fals
             <NavLink
               key={path}
               to={path}
+              onClick={() => { if(window.innerWidth < 768) onCloseMobile?.(); }}
               className={({ isActive }) =>
                 `sidebar-link ${isActive ? 'active' : ''} ${collapsed ? 'justify-center px-3' : ''}`
               }
@@ -76,7 +89,7 @@ export default function Sidebar({ onCollapse, collapsed: initialCollapsed = fals
         </nav>
 
         {/* Collapse toggle */}
-        <div className="p-3 border-t border-white/5">
+        <div className="hidden md:block p-3 border-t border-white/5">
           <button
             onClick={toggleCollapse}
             className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all text-sm"
@@ -85,30 +98,14 @@ export default function Sidebar({ onCollapse, collapsed: initialCollapsed = fals
           </button>
         </div>
 
-        {/* Settings & Theme */}
+        {/* Settings */}
         <div className="p-3 border-t border-white/5 space-y-1">
-          <NavLink to="/settings" className={`sidebar-link ${collapsed ? 'justify-center px-3' : ''}`} aria-label="Settings">
+          <NavLink to="/settings" onClick={() => { if(window.innerWidth < 768) onCloseMobile?.(); }} className={`sidebar-link ${collapsed ? 'justify-center px-3' : ''}`} aria-label="Settings">
             <Settings size={18} aria-hidden="true" />
             {!collapsed && <span>Settings</span>}
           </NavLink>
         </div>
       </motion.aside>
-
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full h-[60px] bg-[#05050A]/90 backdrop-blur-xl border-t border-white/5 z-50 flex items-center justify-around px-2 pb-safe" aria-label="Mobile Navigation">
-        {navItems.slice(0, 5).map(({ path, icon: Icon, label }) => (
-          <NavLink
-            key={path}
-            to={path}
-            className={({ isActive }) =>
-              `flex flex-col items-center justify-center w-14 h-full gap-1 ${isActive ? 'text-amber-400' : 'text-slate-500 hover:text-slate-300'}`
-            }
-          >
-            <Icon size={20} />
-            <span className="text-[9px] font-medium truncate w-full text-center">{label}</span>
-          </NavLink>
-        ))}
-      </nav>
     </>
   );
 }

@@ -84,3 +84,24 @@ async def generate_study_flashcards(
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+@router.post(
+    "/notes",
+    response_model=dict,
+    summary="Generate smart notes from an analysis",
+)
+async def generate_study_notes(
+    request: PredictRequest,
+    db: Session = Depends(get_db),
+):
+    from app.services.predictor import generate_notes
+    try:
+        notes = generate_notes(
+            db=db,
+            analysis_id=request.analysis_id,
+        )
+        return notes
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))

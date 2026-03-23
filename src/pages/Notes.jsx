@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, BookOpen, Zap, Calculator, FileCheck, Clock, Tag } from 'lucide-react';
-import { notes } from '../data/mockData';
+import { FileText, Plus, Search, BookOpen, Zap, Calculator, FileCheck, Clock, Tag, Loader2, Brain } from 'lucide-react';
+import { notes as initialMockNotes } from '../data/mockData';
+import { isBackendAvailable, listPapers, runAnalysis, generateNotes } from '../services/api';
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
@@ -18,12 +19,68 @@ export default function Notes() {
   const [search, setSearch] = useState('');
   const [selectedNote, setSelectedNote] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchNotes() {
+      try {
+        const online = await isBackendAvailable();
+        if (!online) {
+          if (mounted) { setNotes(initialMockNotes); setLoading(false); }
+          return;
+        }
+
+        const res = await listPapers();
+        if (res.papers?.length > 0) {
+          const target = res.papers[0];
+          const analysis = await runAnalysis(target.exam_name, target.subject);
+          const notesResponse = await generateNotes(target.exam_name, target.subject, analysis.analysis_id);
+          
+          if (mounted && notesResponse?.notes) {
+            setNotes(notesResponse.notes);
+          } else if (mounted) {
+            setNotes(initialMockNotes);
+          }
+        } else {
+          if (mounted) setNotes(initialMockNotes);
+        }
+      } catch (err) {
+        if (mounted) setNotes(initialMockNotes); // Fallback to mock data
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    fetchNotes();
+    return () => { mounted = false; };
+  }, []);
 
   const filtered = notes.filter(n => {
     const matchSearch = n.title.toLowerCase().includes(search.toLowerCase()) || n.content.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'all' || n.type === filter;
     return matchSearch && matchFilter;
   });
+
+  if (loading) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <Loader2 size={40} className="text-indigo-400 animate-spin" />
+        <h2 className="text-xl font-bold text-white mt-4">Synthesizing Notes...</h2>
+        <p className="text-slate-400 text-sm">Forging Cheat Sheets, Formula lists, and Summaries straight from your syllabus.</p>
+      </div>
+    );
+  }
+
+  if (!notes || notes.length === 0) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <Brain size={40} className="text-slate-500" />
+        <h2 className="text-xl font-bold text-white mt-4">No Notes Available</h2>
+        <p className="text-slate-400 text-sm">Upload a PDF exam in the main application first to generate Smart Notes.</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div className="p-6 space-y-6" variants={container} initial="hidden" animate="show">
